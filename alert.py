@@ -23,8 +23,30 @@ def get_natural_delta(created):
     delta = dt.datetime.now() - created_datetime
     return 'Posted ' + humanize.naturaldelta(delta) + ' ago'
 
+def send_message_to_slack(new_comments, rdb):
+    from urllib import request, parse
+    import json
+
+    text = 'New Reddit thread(s) mentioning <KEYWORD_TO_MONITOR> have recently been posted\n\n'
+    i = 1
+    for nc in new_comments:
+        comment = rdb.select_comment(nc)
+        text += f'{i}. "{comment[2]}"\n{get_natural_delta(comment[3])} ({comment[1]})\n\n'
+        i += 1
+
+    post = {"text": "{0}".format(text)}
+
+    try:
+        json_data = json.dumps(post)
+        req = request.Request("<SLACK_WEBHOOK_URL>",
+                              data=json_data.encode('ascii'),
+                              headers={'Content-Type': 'application/json'}) 
+        resp = request.urlopen(req)
+    except Exception as em:
+        print("EXCEPTION: " + str(em))
+
 def send_text(new_comments, rdb):
-    message_body = '-----------------------------------\n\nALERT: New Reddit thread(s) regarding <YOUR_SEARCH_QUERY>\n\n'
+    message_body = '-----------------------------------\n\nALERT: New Reddit thread(s) regarding <KEYWORD_TO_MONITOR>\n\n'
 
     i = 1
     for nc in new_comments:
@@ -66,6 +88,7 @@ def main():
     new_comments = get_new_comments(r, rdb)
     if len(new_comments):
         send_text(new_comments, rdb)
+        send_message_to_slack(new_comments, rdb)
 
 if __name__ == '__main__':
     main()
