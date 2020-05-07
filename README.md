@@ -1,3 +1,7 @@
+1. Install dependencies
+2. Edit config.py
+3. `python alert.py`
+
 # Description
 
 A python application to monitor a given reddit thread for posts matching your search criteria.
