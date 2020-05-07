@@ -9,11 +9,12 @@ import args as arguments
 from config import (
     account_sid,
     auth_token,
+    DATABASE,
     KEYWORD_PRIMARY,
-    KEYWORD_SECONDARY,
     NUMBERS,
-    TWILIO_NUMBER,
+    TEST_DATABASE,
     THREAD,
+    TWILIO_NUMBER,
     WEBHOOK_URL
 )
 import test
@@ -74,20 +75,32 @@ def get_new_comments(r, rdb):
     new_submissions = r.reddit.subreddit(THREAD).new()
 
     new_comments = []
+    i = 1
     for ns in new_submissions:
+        print(bcolor.get_color('cyan', f'({i}) Checking for keyword in (') + bcolor.get_color('blue', f'{ns.shortlink}') + bcolor.get_color('cyan', f')'))
+        i += 1
         comment = (ns.id, ns.shortlink, ns.title, ns.created_utc)
-        if KEYWORD_SECONDARY in ns.title.lower():
-            if not rdb.comment_exists(ns.id):
-                ns.comments.replace_more(limit=0)
-                for c in ns.comments.list():
-                    if KEYWORD_PRIMARY in c.body.lower():
-                        new_comm = rdb.create_comment(comment)
-                        new_comments.append(ns.id)
-        elif KEYWORD_PRIMARY in ns.title.lower(): 
+        # check for keyword in post title
+        if KEYWORD_PRIMARY in ns.title.lower(): 
+            print(bcolor.get_color('green', f'[FOUND KEYWORD] in post titled ') + bcolor.get_color('yellow', f'\"{ns.title}\"\n'))
             if not rdb.comment_exists(ns.id):
                 new_comm = rdb.create_comment(comment)
                 new_comments.append(ns.id)
 
+        # check for keyword in post's comments
+        else:
+            if not rdb.comment_exists(ns.id):
+                ns.comments.replace_more(limit=0)
+                # cycle through post comments
+                for c in ns.comments.list():
+                    # break at first occurence of keyword in comments
+                    if KEYWORD_PRIMARY in c.body.lower():
+                        print(bcolor.get_color('green', f'   - [FOUND KEYWORD] in post comment\n   - ') + bcolor.get_color('yellow', f'https://reddit.com{c.permalink}'))
+                        comment = (ns.id, f'https://reddit.com{c.permalink}', ns.title, ns.created_utc)
+                        new_comm = rdb.create_comment(comment)
+                        new_comments.append(ns.id)
+                        break
+        print()
     return new_comments
 
 def main():
@@ -96,7 +109,10 @@ def main():
 
     # init reddit instance and connect to local sqlite3 db
     r = Reddit()
-    rdb = RedditDB()
+    if args.tests == True:
+        rdb = RedditDB(TEST_DATABASE)
+    else:
+        rdb = RedditDB(DATABASE)
 
     # get latest 100 reddit posts from the subreddit
     new_comments = get_new_comments(r, rdb)

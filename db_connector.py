@@ -1,10 +1,9 @@
 import sqlite3
 from sqlite3 import Error
-from config import DATABASE
 
 class RedditDB:
-    def __init__(self):
-        self.conn = self.create_connection(DATABASE)
+    def __init__(self, db):
+        self.conn = self.create_connection(db)
         self.init_tables()
 
     def create_connection(self, db_file):
