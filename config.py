@@ -1,0 +1,29 @@
+# Reddit
+REDDIT_API_CREDENTIALS = {
+    'client_id': '<YOUR_CLIENT_ID>',
+    'client_secret': '<YOUR_CLIENT_SECRET>',
+    'user_agent': '<POPULAR_SPEECH>',
+    'username': '<YOUR_USERNAME>',
+    'password': '<YOUR_PASSWORD>',
+}
+THREAD = '<THREAD_TO_SEARCH>'
+
+# sqlite3
+DATABASE = '<PATH_TO_SQLITE3_DB>'
+
+# Slack
+WEBHOOK_URL = '<SLACK_WEBHOOK_URL>'
+
+# Twilio
+NUMBERS = ['<RECIPIENT_LIST>',]
+account_sid = '<YOUR_ACCOUNT_SID>'
+auth_token = '<YOUR_AUTH_TOKEN>'
+TWILIO_NUMBER = '<YOUR_TWILIO_NUMBER>'
+
+# Other
+KEYWORD_PRIMARY = '<KEYWORD_TO_SEARCH_FOR>'
+
+# test.py
+PERSONAL_MOBILE_NUM = '<YOUR_PERSONAL_MOBILE_NUM>'
+TEST_WEBHOOK_URL = '<TEST_SLACK_WEBHOOK_URL>'
+TEST_DATABASE = '<PATH_TO_TEST_SQLITE3_DB>'
