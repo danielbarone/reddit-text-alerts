@@ -6,7 +6,7 @@
 
 A python application to monitor a given reddit thread for posts matching your search criteria.
 
-When new posts matching your search parameters are found, it sends a text and slack message containing a link to the posts to your desired recepients/slack threads. 
+When new posts matching your search parameters are found, it sends a text and slack message containing a link to the posts to your desired recipients/slack threads. 
 
 # Requirements
 
